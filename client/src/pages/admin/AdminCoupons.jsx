@@ -8,7 +8,7 @@ export default function AdminCoupons() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [form, setForm] = useState({ code: '', discountType: 'percentage', discountValue: '', minOrderAmount: '', maxDiscount: '', expiresAt: '', maxUses: '' });
+  const [form, setForm] = useState({ code: '', discountType: 'percentage', discountValue: '', minOrderValue: '', maxDiscount: '', expiryDate: '', usageLimit: '' });
 
   const load = async () => {
     try { const res = await API.get('/coupons'); setCoupons(res.data.coupons || []); } catch {}
@@ -23,7 +23,7 @@ export default function AdminCoupons() {
       await API.post('/coupons', form);
       toast.success('Coupon created!');
       setShowForm(false);
-      setForm({ code: '', discountType: 'percentage', discountValue: '', minOrderAmount: '', maxDiscount: '', expiresAt: '', maxUses: '' });
+      setForm({ code: '', discountType: 'percentage', discountValue: '', minOrderValue: '', maxDiscount: '', expiryDate: '', usageLimit: '' });
       load();
     } catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
   };
@@ -65,7 +65,7 @@ export default function AdminCoupons() {
                 </div>
                 <div>
                   <label className="text-sm text-dark-100 mb-1.5 block">Min Order (₹)</label>
-                  <input type="number" value={form.minOrderAmount} onChange={(e) => setForm({ ...form, minOrderAmount: e.target.value })} className="input-field" placeholder="999" />
+                  <input type="number" value={form.minOrderValue} onChange={(e) => setForm({ ...form, minOrderValue: e.target.value })} className="input-field" placeholder="999" />
                 </div>
                 <div>
                   <label className="text-sm text-dark-100 mb-1.5 block">Max Discount (₹)</label>
@@ -74,12 +74,12 @@ export default function AdminCoupons() {
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-dark-100 mb-1.5 block">Expires At</label>
-                  <input type="date" value={form.expiresAt} onChange={(e) => setForm({ ...form, expiresAt: e.target.value })} className="input-field" />
+                  <label className="text-sm text-dark-100 mb-1.5 block">Expiry Date *</label>
+                  <input type="date" required value={form.expiryDate} onChange={(e) => setForm({ ...form, expiryDate: e.target.value })} className="input-field" />
                 </div>
                 <div>
                   <label className="text-sm text-dark-100 mb-1.5 block">Max Uses</label>
-                  <input type="number" value={form.maxUses} onChange={(e) => setForm({ ...form, maxUses: e.target.value })} className="input-field" placeholder="100" />
+                  <input type="number" value={form.usageLimit} onChange={(e) => setForm({ ...form, usageLimit: e.target.value })} className="input-field" placeholder="100" />
                 </div>
               </div>
               <button type="submit" className="btn-primary">Create Coupon</button>
@@ -103,8 +103,8 @@ export default function AdminCoupons() {
                     <p className="font-mono font-bold text-lg">{c.code}</p>
                     <p className="text-dark-200 text-xs">
                       {c.discountType === 'percentage' ? `${c.discountValue}% off` : `₹${c.discountValue} off`}
-                      {c.minOrderAmount > 0 && ` · Min ₹${c.minOrderAmount}`}
-                      {c.expiresAt && ` · Expires ${new Date(c.expiresAt).toLocaleDateString('en-IN')}`}
+                      {c.minOrderValue > 0 && ` · Min ₹${c.minOrderValue}`}
+                      {c.expiryDate && ` · Expires ${new Date(c.expiryDate).toLocaleDateString('en-IN')}`}
                     </p>
                   </div>
                 </div>
