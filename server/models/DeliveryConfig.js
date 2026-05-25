@@ -1,0 +1,52 @@
+import mongoose from 'mongoose';
+
+const deliverySlabSchema = new mongoose.Schema({
+  minKm: { type: Number, required: true },
+  maxKm: { type: Number, required: true },
+  charge: { type: Number, required: true },
+});
+
+const deliveryConfigSchema = new mongoose.Schema({
+  storeLocation: {
+    lat: { type: Number, required: true, default: 28.6139 },
+    lng: { type: Number, required: true, default: 77.2090 },
+    address: { type: String, default: 'New Delhi, India' },
+  },
+  freeDeliveryRadius: {
+    type: Number,
+    default: 5, // km
+  },
+  perKmCharge: {
+    type: Number,
+    default: 4, // ₹ per km beyond free radius
+  },
+  deliverySlabs: {
+    type: [deliverySlabSchema],
+    default: [
+      { minKm: 0, maxKm: 5, charge: 0 },
+      { minKm: 5, maxKm: 10, charge: 20 },
+      { minKm: 10, maxKm: 15, charge: 40 },
+      { minKm: 15, maxKm: 25, charge: 60 },
+      { minKm: 25, maxKm: 50, charge: 100 },
+    ],
+  },
+  maxDeliveryRadius: {
+    type: Number,
+    default: 50, // km
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+// Ensure only one config document exists
+deliveryConfigSchema.statics.getConfig = async function () {
+  let config = await this.findOne();
+  if (!config) {
+    config = await this.create({});
+  }
+  return config;
+};
+
+export default mongoose.model('DeliveryConfig', deliveryConfigSchema);
