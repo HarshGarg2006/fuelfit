@@ -86,6 +86,22 @@ export default function CheckoutPage() {
     );
   };
 
+  const isSikandrabadCustomer = (addr) => {
+    if (!addr) return false;
+    const pin = String(addr.pincode || '').trim();
+    const city = String(addr.city || '').trim().toLowerCase();
+    const street = String(addr.street || '').trim().toLowerCase();
+    return pin === '203205' || city.includes('sikandrabad') || street.includes('sikandrabad');
+  };
+
+  const isSikandrabadActive = isSikandrabadCustomer(address);
+
+  useEffect(() => {
+    if (!isSikandrabadActive && paymentMethod === 'cod') {
+      setPaymentMethod('upi');
+    }
+  }, [isSikandrabadActive, paymentMethod]);
+
   // Distance calculation API call
   useEffect(() => {
     const checkDistance = async () => {
@@ -95,10 +111,6 @@ export default function CheckoutPage() {
           const res = await API.post('/delivery/calculate', { lat: address.lat, lng: address.lng });
           if (res.data.success) {
             setDistanceInfo(res.data);
-            if (res.data.distance > 20) {
-              setPaymentMethod('upi');
-              toast.error('COD is disabled (distance exceeds 20 km)');
-            }
           }
         } catch (err) {
           console.error('Error calculating distance:', err);
@@ -114,8 +126,8 @@ export default function CheckoutPage() {
     return sum + ((p?.discountPrice > 0 ? p.discountPrice : p?.price) || 0) * item.quantity;
   }, 0);
   
-  // Use dynamic delivery fee if available, otherwise fallback to static calculation
-  const deliveryFee = distanceInfo ? distanceInfo.fee : (subtotal > 999 ? 0 : 49);
+  // Use dynamic delivery fee if available, otherwise fallback to static calculation. Free for Sikandrabad.
+  const deliveryFee = isSikandrabadActive ? 0 : (distanceInfo ? distanceInfo.fee : (subtotal > 999 ? 0 : 49));
   const total = subtotal - discount + deliveryFee;
 
   const handleApplyCoupon = async () => {
@@ -140,11 +152,8 @@ export default function CheckoutPage() {
     }
 
     if (paymentMethod === 'cod') {
-      if (!address.lat || !address.lng) {
-        return toast.error('Live location detection is required for Cash on Delivery (COD) eligibility.');
-      }
-      if (distanceInfo && distanceInfo.distance > 20) {
-        return toast.error('COD is only available within 20 km of our store.');
+      if (!isSikandrabadActive) {
+        return toast.error('Cash on Delivery (COD) is only available inside Sikandrabad (Pincode 203205).');
       }
     }
 
@@ -181,7 +190,7 @@ export default function CheckoutPage() {
     { num: 3, label: 'Confirm', icon: FiCheckCircle },
   ];
 
-  const isCodBlocked = !address.lat || !address.lng || (distanceInfo && distanceInfo.distance > 20);
+  const isCodBlocked = !isSikandrabadActive;
 
   return (
     <div className="py-8 fade-in">
@@ -212,7 +221,7 @@ export default function CheckoutPage() {
                 <div className="mb-6 bg-dark-800/40 p-4 rounded-xl border border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                   <div>
                     <h3 className="font-semibold text-sm text-white">Detect Live Location</h3>
-                    <p className="text-xs text-dark-300">Required for Cash on Delivery (COD) eligibility</p>
+                    <p className="text-xs text-dark-300">Fast address auto-fill & precise distance check</p>
                   </div>
                   <button
                     type="button"
@@ -248,7 +257,7 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm text-dark-100 mb-1.5 block">Pincode *</label>
-                      <input value={address.pincode} onChange={(e) => setAddress({ ...address, pincode: e.target.value })} className="input-field" placeholder="400001" />
+                      <input value={address.pincode} onChange={(e) => setAddress({ ...address, pincode: e.target.value })} className="input-field" placeholder="203205" />
                     </div>
                     <div>
                       <label className="text-sm text-dark-100 mb-1.5 block">Phone</label>
@@ -271,18 +280,13 @@ export default function CheckoutPage() {
                   </div>
                 )}
 
-                {!checkingDistance && distanceInfo && (
-                  <div className={`text-xs p-3 rounded-lg border mb-4 font-semibold ${distanceInfo.distance > 20 ? 'text-neon-red bg-neon-red/5 border-neon-red/10' : 'text-neon-green bg-neon-green/5 border-neon-green/10'}`}>
-                    {distanceInfo.distance > 20 
-                      ? `⚠️ Store distance is ${distanceInfo.distance} km. COD is only allowed within 20 km.` 
-                      : `✓ Store distance: ${distanceInfo.distance} km. COD is available!`
-                    }
+                {!checkingDistance && isSikandrabadActive ? (
+                  <div className="text-xs text-neon-green bg-neon-green/5 p-3 rounded-lg border border-neon-green/10 mb-4 font-semibold">
+                    ✓ Free Delivery and Cash on Delivery (COD) are available for Sikandrabad customers!
                   </div>
-                )}
-
-                {!checkingDistance && !address.lat && (
+                ) : (
                   <div className="text-xs text-neon-orange bg-neon-orange/5 p-3 rounded-lg border border-neon-orange/10 mb-4 font-semibold">
-                    ⚠️ Detect your live location in the Address step to check if Cash on Delivery (COD) is available.
+                    ⚠️ Cash on Delivery (COD) is only available inside Sikandrabad (Pincode 203205). Please pay online via UPI/Scanner.
                   </div>
                 )}
 
@@ -301,7 +305,7 @@ export default function CheckoutPage() {
                     <input type="radio" name="payment" value="cod" checked={paymentMethod === 'cod'} disabled={isCodBlocked} onChange={() => setPaymentMethod('cod')} className="accent-[var(--color-neon-red)] w-4 h-4 mt-1" />
                     <div className="flex-1">
                       <p className="font-semibold text-sm">Cash on Delivery (COD)</p>
-                      <p className="text-dark-200 text-xs">Pay upon delivery (available within 20 km of store)</p>
+                      <p className="text-dark-200 text-xs">Pay upon delivery (exclusive to Sikandrabad customers)</p>
                     </div>
                   </label>
                 </div>

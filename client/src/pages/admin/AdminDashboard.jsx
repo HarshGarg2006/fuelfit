@@ -86,7 +86,19 @@ export default function AdminDashboard() {
                       <td className="py-3 px-2 font-mono text-xs">#{o._id?.slice(-8).toUpperCase()}</td>
                       <td className="py-3 px-2">{o.user?.name || 'N/A'}</td>
                       <td className="py-3 px-2 font-semibold">₹{o.totalPrice?.toLocaleString()}</td>
-                      <td className="py-3 px-2"><span className={`badge text-xs ${o.orderStatus === 'Delivered' ? 'badge-green' : o.orderStatus === 'Shipped' ? 'badge-blue' : 'badge-orange'}`}>{o.orderStatus}</span></td>
+                      <td className="py-3 px-2">
+                        <span className={`badge text-xs ${
+                          o.orderStatus === 'delivered' ? 'badge-green' : 
+                          (o.orderStatus === 'shipped' || o.orderStatus === 'confirmed') ? 'badge-blue' : 
+                          o.orderStatus === 'cancelled' ? 'badge-red' : 'badge-orange'
+                        }`}>
+                          {o.orderStatus === 'confirmed' ? 'Confirmed' :
+                           o.orderStatus === 'packed' ? 'Packed' :
+                           o.orderStatus === 'shipped' ? 'Shipped' :
+                           o.orderStatus === 'delivered' ? 'Delivered' :
+                           o.orderStatus === 'cancelled' ? 'Cancelled' : o.orderStatus}
+                        </span>
+                      </td>
                       <td className="py-3 px-2 text-dark-200">{new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
                     </tr>
                   ))}

@@ -6,5 +6,5 @@ Set-Location -Path "C:\Users\DELL\.gemini\antigravity\scratch\fuelfit-main"
 & "C:\Program Files\Git\cmd\git.exe" remote remove origin 2>$null
 & "C:\Program Files\Git\cmd\git.exe" remote add origin https://github.com/HarshGarg2006/fuelfit.git
 & "C:\Program Files\Git\cmd\git.exe" add .
-& "C:\Program Files\Git\cmd\git.exe" commit -m "feat: upi, location, cod limit, price, coupon fixes"
+& "C:\Program Files\Git\cmd\git.exe" commit -m "feat: Sikandrabad location delivery rules and admin order status dropdown fixes"
 & "C:\Program Files\Git\cmd\git.exe" push -u origin main --force

@@ -5,8 +5,20 @@ import { fetchOrderById } from '../store/slices/orderSlice';
 import { getImageUrl } from '../utils/imageUrl';
 import { FiPackage, FiMapPin, FiCreditCard, FiChevronRight, FiCheckCircle, FiTruck, FiClock, FiImage } from 'react-icons/fi';
 
-const statusSteps = ['Processing', 'Shipped', 'Delivered'];
-const statusIcons = { Processing: FiClock, Shipped: FiTruck, Delivered: FiCheckCircle };
+const statusSteps = ['confirmed', 'packed', 'shipped', 'delivered'];
+const statusLabels = {
+  confirmed: 'Confirmed',
+  packed: 'Packed',
+  shipped: 'Shipped',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled'
+};
+const statusIcons = { 
+  confirmed: FiClock, 
+  packed: FiPackage, 
+  shipped: FiTruck, 
+  delivered: FiCheckCircle 
+};
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -19,6 +31,7 @@ export default function OrderDetailPage() {
     return <div className="py-12 page-container"><div className="skeleton h-96 rounded-2xl" /></div>;
   }
 
+  const isCancelled = order.orderStatus === 'cancelled';
   const currentStep = statusSteps.indexOf(order.orderStatus);
 
   return (
@@ -37,25 +50,31 @@ export default function OrderDetailPage() {
 
         {/* Status tracker */}
         <div className="glass-card p-6 mb-6">
-          <div className="flex items-center justify-between">
-            {statusSteps.map((s, i) => {
-              const Icon = statusIcons[s];
-              const active = i <= currentStep;
-              return (
-                <div key={s} className="flex items-center flex-1">
-                  <div className="flex flex-col items-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${active ? 'bg-neon-green/20 text-neon-green' : 'bg-dark-600 text-dark-300'}`}>
-                      <Icon size={18} />
+          {isCancelled ? (
+            <div className="text-center py-2 text-neon-red font-semibold flex items-center justify-center gap-2">
+              <FiCheckCircle size={20} className="rotate-45" /> This order has been cancelled.
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              {statusSteps.map((s, i) => {
+                const Icon = statusIcons[s];
+                const active = i <= currentStep;
+                return (
+                  <div key={s} className="flex items-center flex-1">
+                    <div className="flex flex-col items-center">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${active ? 'bg-neon-green/20 text-neon-green' : 'bg-dark-600 text-dark-300'}`}>
+                        <Icon size={18} />
+                      </div>
+                      <span className={`text-xs mt-2 ${active ? 'text-white' : 'text-dark-300'}`}>{statusLabels[s]}</span>
                     </div>
-                    <span className={`text-xs mt-2 ${active ? 'text-white' : 'text-dark-300'}`}>{s}</span>
+                    {i < statusSteps.length - 1 && (
+                      <div className={`flex-1 h-0.5 mx-2 ${i < currentStep ? 'bg-neon-green' : 'bg-dark-600'}`} />
+                    )}
                   </div>
-                  {i < statusSteps.length - 1 && (
-                    <div className={`flex-1 h-0.5 mx-2 ${i < currentStep ? 'bg-neon-green' : 'bg-dark-600'}`} />
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Items */}

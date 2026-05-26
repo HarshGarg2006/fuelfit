@@ -5,8 +5,21 @@ import { FiPackage } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import API from '../../store/api/axiosInstance';
 
-const statuses = ['Processing', 'Shipped', 'Delivered', 'Cancelled'];
-const statusColor = { Processing: 'badge-orange', Shipped: 'badge-blue', Delivered: 'badge-green', Cancelled: 'badge-red' };
+const statuses = ['confirmed', 'packed', 'shipped', 'delivered', 'cancelled'];
+const statusLabels = {
+  confirmed: 'Confirmed',
+  packed: 'Packed',
+  shipped: 'Shipped',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled'
+};
+const statusColor = { 
+  confirmed: 'badge-blue', 
+  packed: 'badge-orange', 
+  shipped: 'badge-blue', 
+  delivered: 'badge-green', 
+  cancelled: 'badge-red' 
+};
 
 export default function AdminOrders() {
   const dispatch = useDispatch();
@@ -17,7 +30,7 @@ export default function AdminOrders() {
   const handleStatusChange = async (id, status) => {
     try {
       await dispatch(updateOrderStatus({ id, status })).unwrap();
-      toast.success(`Order ${status.toLowerCase()}`);
+      toast.success(`Order: ${statusLabels[status] || status}`);
     } catch (err) { toast.error(err || 'Failed'); }
   };
 
@@ -75,12 +88,12 @@ export default function AdminOrders() {
                           </div>
                         )}
                       </td>
-                      <td className="py-3 px-4"><span className={`badge text-xs ${statusColor[o.orderStatus] || 'badge-blue'}`}>{o.orderStatus}</span></td>
+                      <td className="py-3 px-4"><span className={`badge text-xs ${statusColor[o.orderStatus] || 'badge-blue'}`}>{statusLabels[o.orderStatus] || o.orderStatus}</span></td>
                       <td className="py-3 px-4 text-dark-200 text-xs">{new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
                       <td className="py-3 px-4">
                         <div className="flex flex-col gap-1.5 items-start">
-                          <select value={o.orderStatus} onChange={(e) => handleStatusChange(o._id, e.target.value)} className="input-field !py-1.5 !px-2 text-xs !w-auto" disabled={o.orderStatus === 'Delivered' || o.orderStatus === 'Cancelled'}>
-                            {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
+                          <select value={o.orderStatus} onChange={(e) => handleStatusChange(o._id, e.target.value)} className="input-field !py-1.5 !px-2 text-xs !w-auto" disabled={o.orderStatus === 'delivered' || o.orderStatus === 'cancelled'}>
+                            {statuses.map((s) => <option key={s} value={s}>{statusLabels[s]}</option>)}
                           </select>
                           {o.paymentInfo?.status !== 'paid' && (
                             <button onClick={() => handlePaymentStatusChange(o._id, 'paid')} className="btn-secondary !py-1 !px-2 text-[10px] w-fit text-neon-green border-neon-green/30 hover:bg-neon-green/10 mt-1 font-semibold transition-colors">

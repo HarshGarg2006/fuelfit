@@ -8,9 +8,9 @@ const deliverySlabSchema = new mongoose.Schema({
 
 const deliveryConfigSchema = new mongoose.Schema({
   storeLocation: {
-    lat: { type: Number, required: true, default: 28.6139 },
-    lng: { type: Number, required: true, default: 77.2090 },
-    address: { type: String, default: 'New Delhi, India' },
+    lat: { type: Number, required: true, default: 28.4528 },
+    lng: { type: Number, required: true, default: 77.6965 },
+    address: { type: String, default: 'Sikandrabad, Bulandshahr, Uttar Pradesh, 203205' },
   },
   freeDeliveryRadius: {
     type: Number,
@@ -40,11 +40,27 @@ const deliveryConfigSchema = new mongoose.Schema({
   },
 });
 
-// Ensure only one config document exists
+// Ensure only one config document exists with the correct store location
 deliveryConfigSchema.statics.getConfig = async function () {
   let config = await this.findOne();
   if (!config) {
-    config = await this.create({});
+    config = await this.create({
+      storeLocation: {
+        lat: 28.4528,
+        lng: 77.6965,
+        address: 'Sikandrabad, Bulandshahr, Uttar Pradesh, 203205'
+      }
+    });
+  } else {
+    // Force update coordinates to Sikandrabad if they are still at the old New Delhi defaults
+    if (config.storeLocation.lat === 28.6139 || !config.storeLocation.lat) {
+      config.storeLocation = {
+        lat: 28.4528,
+        lng: 77.6965,
+        address: 'Sikandrabad, Bulandshahr, Uttar Pradesh, 203205'
+      };
+      await config.save();
+    }
   }
   return config;
 };

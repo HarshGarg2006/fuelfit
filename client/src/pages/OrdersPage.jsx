@@ -5,10 +5,19 @@ import { fetchMyOrders } from '../store/slices/orderSlice';
 import { FiPackage, FiChevronRight, FiShoppingBag } from 'react-icons/fi';
 
 const statusColor = {
-  Processing: 'badge-orange',
-  Shipped: 'badge-blue',
-  Delivered: 'badge-green',
-  Cancelled: 'badge-red',
+  confirmed: 'badge-blue',
+  packed: 'badge-orange',
+  shipped: 'badge-blue',
+  delivered: 'badge-green',
+  cancelled: 'badge-red',
+};
+
+const statusLabels = {
+  confirmed: 'Confirmed',
+  packed: 'Packed',
+  shipped: 'Shipped',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled'
 };
 
 export default function OrdersPage() {
@@ -46,7 +55,7 @@ export default function OrdersPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1">
                     <p className="font-semibold text-sm">Order #{order._id?.slice(-8).toUpperCase()}</p>
-                    <span className={`badge ${statusColor[order.orderStatus] || 'badge-blue'} text-xs`}>{order.orderStatus}</span>
+                    <span className={`badge ${statusColor[order.orderStatus] || 'badge-blue'} text-xs`}>{statusLabels[order.orderStatus] || order.orderStatus}</span>
                   </div>
                   <div className="flex items-center gap-4 text-xs text-dark-200">
                     <span>{order.orderItems?.length || 0} items</span>

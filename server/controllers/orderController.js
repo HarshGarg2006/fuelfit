@@ -9,27 +9,22 @@ export const placeOrder = async (req, res, next) => {
   try {
     const { shippingAddress, paymentInfo, couponCode, deliveryPrice = 0 } = req.body;
 
-    // COD Distance restriction check (Max 20km)
+    const isSikandrabadCustomer = (addr) => {
+      if (!addr) return false;
+      const pin = String(addr.pincode || '').trim();
+      const city = String(addr.city || '').trim().toLowerCase();
+      const street = String(addr.street || '').trim().toLowerCase();
+      return pin === '203205' || city.includes('sikandrabad') || street.includes('sikandrabad');
+    };
+
+    const isSikandrabadActive = isSikandrabadCustomer(shippingAddress);
+
+    // COD restriction check (COD only available for Sikandrabad customers)
     if (paymentInfo && paymentInfo.method === 'cod') {
-      if (!shippingAddress || !shippingAddress.lat || !shippingAddress.lng) {
+      if (!isSikandrabadActive) {
         return res.status(400).json({
           success: false,
-          message: 'Live location coordinates are required for Cash on Delivery (COD) orders.'
-        });
-      }
-      
-      const config = await DeliveryConfig.getConfig();
-      const distance = haversineDistance(
-        config.storeLocation.lat,
-        config.storeLocation.lng,
-        shippingAddress.lat,
-        shippingAddress.lng
-      );
-      
-      if (distance > 20) {
-        return res.status(400).json({
-          success: false,
-          message: `Cash on Delivery (COD) is only available within 20 km of our store. Your location is ${Math.round(distance * 10) / 10} km away.`
+          message: 'Cash on Delivery (COD) is only available for customers inside Sikandrabad (Pincode 203205).'
         });
       }
     }
@@ -61,11 +56,12 @@ export const placeOrder = async (req, res, next) => {
       }
     }
 
-    const totalPrice = itemsPrice + taxPrice + deliveryPrice - discountAmount;
+    const finalDeliveryPrice = isSikandrabadActive ? 0 : deliveryPrice;
+    const totalPrice = itemsPrice + taxPrice + finalDeliveryPrice - discountAmount;
 
     const order = await Order.create({
       user: req.user._id, items, shippingAddress, paymentInfo,
-      itemsPrice, taxPrice, deliveryPrice, discountAmount, couponCode, totalPrice,
+      itemsPrice, taxPrice, deliveryPrice: finalDeliveryPrice, discountAmount, couponCode, totalPrice,
     });
 
     // Update stock
