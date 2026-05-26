@@ -6,5 +6,5 @@ Set-Location -Path "C:\Users\DELL\.gemini\antigravity\scratch\fuelfit-main"
 & "C:\Program Files\Git\cmd\git.exe" remote remove origin 2>$null
 & "C:\Program Files\Git\cmd\git.exe" remote add origin https://github.com/HarshGarg2006/fuelfit.git
 & "C:\Program Files\Git\cmd\git.exe" add .
-& "C:\Program Files\Git\cmd\git.exe" commit -m "feat: crop upi-qr scanner properly and remove transaction id requirement"
+& "C:\Program Files\Git\cmd\git.exe" commit -m "feat: complete proper full-scanner crop and restore transaction verification"
 & "C:\Program Files\Git\cmd\git.exe" push -u origin main --force
