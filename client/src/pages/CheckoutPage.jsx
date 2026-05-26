@@ -317,8 +317,8 @@ export default function CheckoutPage() {
                     <div className="flex flex-col items-center gap-3">
                       <p className="text-xs text-dark-200 text-center">Scan the PhonePe QR Code below using any app (PhonePe, GPay, Paytm) to pay <span className="font-bold text-white">₹{total.toLocaleString()}</span></p>
                       
-                      <div className="relative p-2.5 bg-white rounded-2xl w-44 h-44 flex items-center justify-center shadow-xl border border-white/5">
-                        <img src="/upi-qr.png" alt="UPI QR Scanner" className="w-full h-full object-contain rounded-xl" />
+                      <div className="relative p-3 bg-white rounded-3xl w-64 h-64 sm:w-72 sm:h-72 flex items-center justify-center shadow-2xl border-4 border-neon-red/10">
+                        <img src="/upi-qr.png" alt="UPI QR Scanner" className="w-full h-full object-contain rounded-2xl" />
                       </div>
 
                       <div className="w-full space-y-1.5 mt-1">
