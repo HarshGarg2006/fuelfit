@@ -157,22 +157,12 @@ export default function CheckoutPage() {
       }
     }
 
-    if (paymentMethod === 'upi') {
-      if (!transactionId) {
-        return toast.error('Please enter the 12-digit UPI Transaction ID / UTR.');
-      }
-      if (transactionId.length !== 12 || !/^\d+$/.test(transactionId)) {
-        return toast.error('UPI Transaction ID / UTR must be exactly 12 digits.');
-      }
-    }
-
     try {
       const result = await dispatch(placeOrder({
         shippingAddress: address,
         paymentInfo: { 
           method: paymentMethod, 
-          status: 'pending',
-          ...(paymentMethod === 'upi' ? { upiTransactionId: transactionId } : {})
+          status: 'pending'
         },
         couponCode: couponCode || undefined,
         deliveryPrice: deliveryFee,
@@ -337,17 +327,6 @@ export default function CheckoutPage() {
                           </button>
                         </div>
                       </div>
-                    </div>
-
-                    <div className="border-t border-white/5 pt-4">
-                      <label className="text-xs font-semibold text-dark-100 mb-1.5 block">12-Digit UPI Transaction ID / UTR *</label>
-                      <input
-                        value={transactionId}
-                        onChange={(e) => setTransactionId(e.target.value.replace(/\D/g, '').slice(0, 12))}
-                        className="input-field font-mono"
-                        placeholder="e.g. 329184719284"
-                      />
-                      <p className="text-[10px] text-dark-300 mt-1">Enter the 12-digit reference/UTR number from your payment confirmation screen.</p>
                     </div>
                   </div>
                 )}
