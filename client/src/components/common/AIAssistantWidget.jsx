@@ -3,10 +3,16 @@ import { FiMessageSquare, FiX, FiCheckCircle, FiAlertCircle, FiSend, FiLoader, F
 
 const QUICK_PROMPTS = [
   "Where is my order? How to track?",
-  "How do I return my unopened protein?",
-  "How to verify if my supplement is 100% authentic?",
+  "How to return or exchange unopened protein?",
+  "How to verify authenticity scratch code?",
   "I received a broken seal protein tub!",
-  "Money was deducted twice from UPI but order failed."
+  "The plastic scoop is missing inside my jar!",
+  "I received an expired supplement container!",
+  "My pre-workout/creatine is clumpy like rocks.",
+  "Which protein is best for beginner muscle gain?",
+  "Failed transaction: Money deducted twice via UPI.",
+  "Can I change my shipping address after order?",
+  "Is COD (Cash on Delivery) available?"
 ];
 
 export default function AIAssistantWidget() {
@@ -24,47 +30,106 @@ export default function AIAssistantWidget() {
     setLoading(true);
     setResult(null);
 
-    // Simulate AI inference & resolution
+    // AI Query Intent Classification & Smart Resolution Mock Engine
     setTimeout(() => {
       const t = query.toLowerCase();
-      let category = "Order Tracking & Status";
+      let category = "General Support";
       let urgency = "Low";
       let sentiment = "Neutral";
       let reply = "";
       let action = "";
 
-      if (t.includes('seal') || t.includes('broken') || t.includes('leak') || t.includes('damaged') || t.includes('cracked')) {
+      // 1. Damaged / Broken Seal
+      if (t.includes('seal') || t.includes('broken') || t.includes('leak') || t.includes('damaged') || t.includes('cracked') || t.includes('spilled')) {
         category = "Damaged / Broken Seal";
         urgency = "High";
         sentiment = "Negative";
         action = "100% Free Replacement Dispatch";
-        reply = `Hi ${name || 'Customer'}, we are very sorry about the broken seal on your order ${orderId || 'FF-ONLINE'}. Your health is our highest priority! Please do not consume it. We have automatically authorized a fresh sealed replacement tub with express courier tracking.`;
-      } else if (t.includes('where is') || t.includes('track') || t.includes('tracking') || t.includes('status')) {
-        category = "Order Tracking & Status";
-        urgency = "Low";
+        reply = `Hi ${name || 'Customer'}, we apologize for the broken seal on order ${orderId || 'FF-ONLINE'}. Please do not consume it for safety reasons. We have dispatched a 100% free sealed replacement tub with priority tracking.`;
+      } 
+      // 2. Missing Item / Scoop
+      else if (t.includes('scoop') || t.includes('missing') || t.includes('empty') || t.includes('less weight')) {
+        category = "Missing Product or Accessories";
+        urgency = "Medium";
+        sentiment = "Negative";
+        action = "Express Scoop/Item Dispatch";
+        reply = `Hi ${name || 'Customer'}, protein scoops sometimes sink to the bottom during shipping. Please try using a dry fork to find it. If it is genuinely missing, we are shipping a spare scoop & a shaker bottle to you immediately at no charge!`;
+      }
+      // 3. Expired Supplement
+      else if (t.includes('expired') || t.includes('expiry') || t.includes('shelf life') || t.includes('date')) {
+        category = "Expired Product Complaint";
+        urgency = "Critical";
+        sentiment = "Negative";
+        action = "Batch Recall & Free Replacement";
+        reply = `Hi ${name || 'Customer'}, FuelFit maintains strict batch fresh guarantees. If you received an expired item, please share a picture of the base stamp. We will retrieve the tub and dispatch a fresh batch under 48 hours.`;
+      }
+      // 4. Clumpy Pre-workout / Creatine
+      else if (t.includes('clump') || t.includes('clumpy') || t.includes('solid') || t.includes('moisture')) {
+        category = "Product Quality Concern (Clumping)";
+        urgency = "Medium";
         sentiment = "Neutral";
-        action = "Live GPS Coordinates Synced";
-        reply = `Hi ${name || 'Customer'}, you can check live shipment milestones for ${orderId || 'your order'} directly on FuelFit. Standard metro delivery takes 24-48 hours.`;
-      } else if (t.includes('return') || t.includes('exchange')) {
+        action = "Quality Team Advisory & Replacement";
+        reply = `Hi ${name || 'Customer'}, pre-workouts contain hygroscopic ingredients (like Citrulline/Glycerol) which absorb moisture and form soft clumps. It is 100% safe to consume; just shake the tub to break them. If it is rock solid, we will replace it for you.`;
+      }
+      // 5. Tracking / Shipment ETA
+      else if (t.includes('where is') || t.includes('track') || t.includes('tracking') || t.includes('status') || t.includes('delay') || t.includes('stuck')) {
+        category = "Order Tracking & Status";
+        urgency = "Medium" if t.includes('stuck') or t.includes('delay') else "Low";
+        sentiment = t.includes('delay') ? "Negative" : "Neutral";
+        action = "Priority Hub Courier Escalation";
+        reply = `Hi ${name || 'Customer'}, your order ${orderId || 'FF-ONLINE'} status can be tracked at https://fuelfit-six.vercel.app/track/${orderId || 'FF-ONLINE'}. We have escalated with our courier partner to speed up the out-for-delivery run.`;
+      } 
+      // 6. Return / Exchange Policy
+      else if (t.includes('return') || t.includes('exchange') || t.includes('refund policy')) {
         category = "Return & Exchange Inquiry";
         urgency = "Low";
         sentiment = "Neutral";
         action = "7-Day Hassle-Free Policy Guide";
-        reply = `Hi ${name || 'Customer'}, FuelFit provides a 7-day hassle-free return/exchange policy on all unopened items. Simply go to your Orders profile page and click 'Return Order' to schedule a reverse pickup!`;
-      } else if (t.includes('authentic') || t.includes('genuine') || t.includes('verify') || t.includes('scratch')) {
+        reply = `Hi ${name || 'Customer'}, we accept returns/exchanges of unopened supplements with original outer wraps intact within 7 days of delivery. Go to your Orders dashboard to schedule an automated reverse pickup.`;
+      } 
+      // 7. Authenticity Scratch Code
+      else if (t.includes('authentic') || t.includes('genuine') || t.includes('verify') || t.includes('scratch') || t.includes('fake')) {
         category = "Authenticity Verification";
-        urgency = "Low";
+        urgency = "High" if t.includes('fake') else "Low";
         sentiment = "Neutral";
         action = "Lab Test CoA Portal Guide";
-        reply = `Hi ${name || 'Customer'}, every FuelFit tub contains a unique scratch hologram code on the lid. Enter your 8-digit code at https://fuelfit-six.vercel.app/verify to view your batch's 3rd-party NABL lab test report.`;
-      } else if (t.includes('refund') || t.includes('deducted') || t.includes('failed') || t.includes('twice')) {
+        reply = `Hi ${name || 'Customer'}, every FuelFit product is NABL third-party lab verified. Scratch the cap code and input it at: https://fuelfit-six.vercel.app/verify to view the official Lab Protein Certificate of Analysis.`;
+      } 
+      // 8. Payment Gateway Reversal (Deducted twice)
+      else if (t.includes('refund') || t.includes('deducted') || t.includes('failed') || t.includes('twice') || t.includes('upi') || t.includes('money')) {
         category = "Payment & Refund Issues";
         urgency = "High";
         sentiment = "Negative";
-        action = "Gateway Webhook Auto-Reversal";
-        reply = `Hi ${name || 'Customer'}, any deduction for a pending/failed transaction is automatically reversed back to your UPI/bank account within 24-48 banking hours. Reference ARN: #RF-FIT-${orderId || '9281'}.`;
-      } else {
-        category = "General Nutrition & Support";
+        action = "Razorpay Webhook Auto-Reversal";
+        reply = `Hi ${name || 'Customer'}, failed transaction deductions are securely reversed back to your bank account/UPI within 24-48 business hours by the payment gateway. Refund reference: #RF-FIT-${orderId || '9281'}.`;
+      }
+      // 9. Change Shipping Address
+      else if (t.includes('address') || t.includes('change') || t.includes('modify location')) {
+        category = "Order Modification Inquiry";
+        urgency = "Medium";
+        sentiment = "Neutral";
+        action = "Address Redirection Ticket";
+        reply = `Hi ${name || 'Customer'}, if your order has not left our warehouse, our dispatch team can change the address. Please reply with the new shipping location and pin code immediately.`;
+      }
+      // 10. Supplement Recommendation
+      else if (t.includes('best') || t.includes('beginner') || t.includes('muscle') || t.includes('protein') || t.includes('creatine') || t.includes('fat loss')) {
+        category = "Product Recommendation";
+        urgency = "Low";
+        sentiment = "Positive";
+        action = "Nutrition Advisory Consultation";
+        reply = `Hi ${name || 'Customer'}, for lean muscle gain, post-workout FuelFit Whey Isolate (27g protein/scoop) is ideal. For strength, take 3g Creatine Monohydrate daily. For fat loss, target a calorie deficit with high protein intake.`;
+      }
+      // 11. COD Availability
+      else if (t.includes('cod') || t.includes('cash on delivery') || t.includes('delivery charges')) {
+        category = "Payment & COD Inquiry";
+        urgency = "Low";
+        sentiment = "Neutral";
+        action = "COD Pin Code Serviceability Check";
+        reply = `Hi ${name || 'Customer'}, Cash on Delivery (COD) is available on 25,000+ pin codes in India on FuelFit with zero extra charges! You can check serviceability at checkout.`;
+      }
+      // 12. Generic / Other FAQs
+      else {
+        category = "General Inquiries & FAQs";
         urgency = "Low";
         sentiment = "Neutral";
         action = "Support Ticket Created";
@@ -159,7 +224,7 @@ export default function AIAssistantWidget() {
                   {/* Quick FAQ Chips */}
                   <div>
                     <p className="text-[11px] font-semibold text-dark-200 mb-1.5 uppercase tracking-wider">Quick Inquiries:</p>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto pr-1">
                       {QUICK_PROMPTS.map((p, i) => (
                         <button
                           key={i}
