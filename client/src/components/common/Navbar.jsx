@@ -64,6 +64,7 @@ export default function Navbar() {
             {categories.map((cat) => (
               <Link key={cat.slug} to={`/products?category=${cat.slug}`} className="px-3 py-2 text-sm text-dark-100 hover:text-white hover:bg-white/5 rounded-lg transition-colors">{cat.label}</Link>
             ))}
+            <Link to="/nutrition" className="px-3 py-2 text-sm text-neon-orange font-bold hover:text-white hover:bg-white/5 rounded-lg transition-colors">Nutrition Guide</Link>
           </div>
 
           {/* Actions */}
@@ -126,6 +127,7 @@ export default function Navbar() {
             {categories.map((cat) => (
               <Link key={cat.slug} to={`/products?category=${cat.slug}`} className="block px-3 py-2.5 text-sm text-dark-100 hover:text-white hover:bg-white/5 rounded-lg">{cat.label}</Link>
             ))}
+            <Link to="/nutrition" className="block px-3 py-2.5 text-sm text-neon-orange font-bold hover:bg-white/5 rounded-lg mt-1">Nutrition Guide & Calculator</Link>
             <Link to="/request" className="block px-3 py-2.5 text-sm text-neon-orange hover:bg-white/5 rounded-lg mt-2">Can&apos;t Find Your Supplement?</Link>
           </div>
         )}

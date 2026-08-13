@@ -15,6 +15,8 @@ import OrdersPage from './pages/OrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import WishlistPage from './pages/WishlistPage';
 import ProductRequestPage from './pages/ProductRequestPage';
+import NutritionPage from './pages/NutritionPage';
+import AIAssistantWidget from './components/common/AIAssistantWidget';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
@@ -47,6 +49,7 @@ export default function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/request" element={<ProductRequestPage />} />
+          <Route path="/nutrition" element={<NutritionPage />} />
           <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
@@ -64,6 +67,7 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
+      <AIAssistantWidget />
     </div>
   );
 }

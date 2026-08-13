@@ -160,6 +160,14 @@
     color: var(--color-dark-200);
   }
 
+  /* Dropdown/Select option fix for white-on-white text contrast */
+  select.input-field option,
+  .input-field select option,
+  select option {
+    background-color: var(--color-dark-800) !important;
+    color: #ffffff !important;
+  }
+
   .badge {
     display: inline-flex;
     align-items: center;
