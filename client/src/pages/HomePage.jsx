@@ -71,7 +71,6 @@ export default function HomePage() {
         <div className="page-container relative z-10 py-20">
           <div className="max-w-3xl">
             <div className={`transition-all duration-500 ${animateHero ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <span className="badge badge-red mb-6 text-sm">🔥 NOW LIVE — GRAND LAUNCH</span>
               <h1 className="font-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-none mb-6 whitespace-pre-line">
                 {slide.title.split('\n').map((line, i) => (
                   <span key={i}>{i > 0 && <br />}<span className={i === 0 ? 'gradient-text' : 'text-white'}>{line}</span></span>
