@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiActivity, FiZap, FiTarget, FiAward, FiCheck, FiArrowRight, FiInfo } from 'react-icons/fi';
+import { FiActivity, FiZap, FiArrowRight, FiInfo } from 'react-icons/fi';
 
 export default function NutritionPage() {
   // Calculator States

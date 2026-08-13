@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiMessageSquare, FiX, FiCheckCircle, FiAlertCircle, FiSend, FiLoader, FiZap } from 'react-icons/fi';
+import { FiX, FiCheckCircle, FiSend, FiLoader, FiZap } from 'react-icons/fi';
 
 // Active/Valid Mock Order database for verification
 const VALID_ORDERS = ["FF-9281", "FF-1002", "FF-5504", "FF-7721", "FF-8849"];
